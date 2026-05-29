@@ -84,12 +84,15 @@ app.post("/register", async (req, res) => {
       whatsapp,
       verifikasi: false,
       totalStreams: 0,
-      Pendapatan: 0,
       youtube: "",
       spotify: "",
       platforms: 0,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
+
+    await db.collection("balances").doc(newUser.uid).set({
+      saldo:0
+    })
 
     return res.status(201).json({
       message: "Registrasi berhasil.",
