@@ -4,7 +4,8 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const { Timestamp } = require("firebase-admin/firestore");
 const updatedoc = require("./update/update");
-const withdraw = require("./withdraw/withdraw")
+
+const withdraw = require("./withdraw/withdraw");
 const { admin, db } = require("./middleware/middleware");
 // Middleware
 app.use(cors());
@@ -47,6 +48,7 @@ app.post("/register", async (req, res) => {
     !email ||
     !username ||
     !bank ||
+    !password ||
     !rekening ||
     !namaRekening ||
     !whatsapp
@@ -80,19 +82,21 @@ app.post("/register", async (req, res) => {
       username,
       bank,
       rekening,
+      password,
       namaRekening,
       whatsapp,
       verifikasi: false,
-      totalStreams: 0,
-      youtube: "",
-      spotify: "",
-      platforms: 0,
+      totalPlatfrom: "",
+      trendingSong: [],
+      reject: 0,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
     await db.collection("balances").doc(newUser.uid).set({
-      saldo:0
-    })
+      name,
+      email,
+      saldo: 0,
+    });
 
     return res.status(201).json({
       message: "Registrasi berhasil.",
@@ -169,7 +173,7 @@ app.post("/register", async (req, res) => {
 // });
 
 app.use("/update", verifyToken, updatedoc);
-app.use("/withdraw", verifyToken,withdraw );
+app.use("/withdraw", verifyToken, withdraw);
 
 app.listen(PORT, () => {
   console.log(`🚀 Server berjalan di http://localhost:${PORT}`);
